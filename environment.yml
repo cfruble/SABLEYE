@@ -1,4 +1,4 @@
-name: pyne
+name: SABLEYE
 channels:
   - conda-forge
   - https://conda.software.inl.gov/public
