@@ -16,8 +16,14 @@ yieldList = []
 A_yieldList = np.zeros(200)
 
 # repeate code for 3 different energy i levels?
-
-print(u235yields.independent[0].keys())
+"""
+isoNames = list(u235yields.independent[0].keys())
+for i in range(len(isoNames)):
+    #print(isoNames[i])
+    #print(u235yields.independent[0][isoNames[i]].nominal_value)
+    yieldList.append(u235yields.independent[0][isoNames[i]].nominal_value)
+    isotopeList.append(isoNames)    
+"""
 
 for key in u235yields.independent[0]:
     # check if value above certain significance 
@@ -25,6 +31,7 @@ for key in u235yields.independent[0]:
         yieldList.append(u235yields.independent[0][key].nominal_value)
         isotopeList.append(key)
 
+'''
 for key in u235yields.independent[1]:
     # check if value above certain significance 
     if 1 > 0 : # u235yields.independent[1][key].nominal_value > 0:
@@ -36,17 +43,19 @@ for key in u235yields.independent[2]:
     if 1 > 0 : #u235yields.independent[2][key].nominal_value > 0:
         yieldList.append(u235yields.independent[2][key].nominal_value)
         isotopeList.append(key)
-
+'''
+        
 with open("isotopeList.txt",'w') as f:
     for index,key in enumerate(isotopeList):
-        i = int(remove_letters(key))
+        A = int(remove_letters(key))
         #print(i)
-        if i > 200:
+        if A > 200:
             continue
-        A_yieldList[i] += yieldList[i]
-        print((str(isotopeList[i]))+"     "+str(yieldList[i]),file=f)
+        A_yieldList[A] += yieldList[index]
+        print((str(isotopeList[index]))+"     "+str(yieldList[index]),file=f)
         #f.write(str(isotopeList[i]))+"     "+str(yieldList[i])
 
+print(sum(A_yieldList))
 
 plt.plot(A_yieldList)
-plt.show()
+plt.savefig("fissionYieldDemo.png",dpi=600)
