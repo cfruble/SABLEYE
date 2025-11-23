@@ -61,10 +61,66 @@ class batemanMatrix:
                     print(f"Error : Decay product {childName} from {parent} not in trackedIsotopes")
 
     def addFissionYields(self):
-        pass
+        # mt = 18
+        # this could be a variable or a defailt
+        fissionable = ['0922350000','0922380000']
+        for isotope in self.trackedIsotopes:
+            # loop through all isotopes
+            # check if fissionable
+            if isotope in fissionable:
+                # get cross section
+                # load in fission products data
+                # loop over each isotope in FP data and add to Bateman Matrix
+                pass
 
     def addTransmutations(self):
-        pass
+        tranmutationRxns = [
+                {"i": 1, "MT": 4, "Reaction": "(n,n)", "A": "A", "Z": "Z", "M": "M+1"},
+                {"i": 2, "MT": 16, "Reaction": "(n,2n)", "A": "A-1", "Z": "Z", "M": "M-1"},
+                {"i": 3, "MT": 17, "Reaction": "(n,3n)", "A": "A-2", "Z": "Z", "M": None},
+                #{"i": 4, "MT": 18, "Reaction": "(n,f)", "A": "FP", "Z": None, "M": None},
+                {"i": 5, "MT": 22, "Reaction": "(n,na)", "A": "A-4", "Z": "Z-2", "M": None},
+                {"i": 6, "MT": 23, "Reaction": "(n,n3a)", "A": "A-12", "Z": "Z-6", "M": None},
+                {"i": 7, "MT": 24, "Reaction": "(n,2na)", "A": "A-5", "Z": "Z-2", "M": None},
+                {"i": 8, "MT": 25, "Reaction": "(n,3na)", "A": "A-6", "Z": "Z-2", "M": None},
+                {"i": 9, "MT": 28, "Reaction": "(n,np)", "A": "A-1", "Z": "Z-1", "M": None},
+                {"i": 10, "MT": 29, "Reaction": "(n,n2a)", "A": "A-8", "Z": "Z-2", "M": None},
+                {"i": 11, "MT": 32, "Reaction": "(n,nd)", "A": "A-2", "Z": "Z-1", "M": None},
+                {"i": 12, "MT": 33, "Reaction": "(n,nt)", "A": "A-3", "Z": "Z-2", "M": None},
+                {"i": 13, "MT": 34, "Reaction": "(n,nhe3)", "A": "A-3", "Z": "Z-2", "M": None},
+                {"i": 14, "MT": 37, "Reaction": "(n,4n)", "A": "A-3", "Z": "Z-2", "M": None},
+                {"i": 15, "MT": 41, "Reaction": "(n,2np)", "A": "A-2", "Z": "Z-1", "M": None},
+                {"i": 16, "MT": 44, "Reaction": "(n,n2p)", "A": "A-2", "Z": "Z-1", "M": None},
+                {"i": 17, "MT": 45, "Reaction": "(n,npa)", "A": "A-5", "Z": "Z-2", "M": None},
+                {"i": 18, "MT": 102, "Reaction": "(n,g)", "A": "A+1", "Z": "Z", "M": "M+1"},
+                {"i": 19, "MT": 103, "Reaction": "(n,p)", "A": "A-1", "Z": "Z-1", "M": None},
+                {"i": 20, "MT": 104, "Reaction": "(n,d)", "A": "A-1", "Z": "Z-1", "M": None},
+                {"i": 21, "MT": 105, "Reaction": "(n,t)", "A": "A-2", "Z": "Z-1", "M": None},
+                {"i": 22, "MT": 106, "Reaction": "(n,he3)", "A": "A-2", "Z": "Z-2", "M": None},
+                {"i": 23, "MT": 107, "Reaction": "(n,a)", "A": "A-3", "Z": "Z-2", "M": None},
+                {"i": 24, "MT": 108, "Reaction": "(n,2a)", "A": "A-7", "Z": "Z-4", "M": None},
+                {"i": 25, "MT": 111, "Reaction": "(n,2p)", "A": "A-1", "Z": "Z-2", "M": None},
+                {"i": 26, "MT": 112, "Reaction": "(n,pa)", "A": "A-4", "Z": "Z-3", "M": None},
+                {"i": 27, "MT": 113, "Reaction": "(n,2a)", "A": "A-7", "Z": "Z-4", "M": None},
+                {"i": 28, "MT": 115, "Reaction": "(n,pd)", "A": "A-2", "Z": "Z-2", "M": None},
+                {"i": 29, "MT": 116, "Reaction": "(n,pt)", "A": "A-3", "Z": "Z-2", "M": None},
+                {"i": 30, "MT": 117, "Reaction": "(n,da)", "A": "A-5", "Z": "Z-3", "M": None},
+                ]
+        for targetIndex, targetIso in enumerate(self.trackedIsotopes):
+        # loop through isotopes in self.trackedIsotopes
+            for productIndex, productIso in enumerate(self.trackedIsotopes):
+            # run second loop through tracked isotopes
+
+            # skip for case when the same
+                if targetIndex == productIndex: continue
+
+                # get difference between isotopes A and Z
+                # if isotopes difference match pattern in data above, then get cross section using MT number
+                # find reaction rate using flux and add to bateman matrix
+                self.BM[targetIndex][productIndex] += 0
+
+
+
     
     def exportBatemanMatrix(self):
         """Exports data from Bateman matrix that can then be used by simulation model"""
