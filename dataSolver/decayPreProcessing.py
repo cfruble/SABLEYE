@@ -90,7 +90,7 @@ class decayProcessing:
             if decayMode == "B-": # beta -
                 Z += 1
             elif decayMode == "A": # alpha
-                A -= 2
+                A -= 4
                 Z -= 2
             elif decayMode == "EC" or decayMode == "B+": # electron capture
                 Z -= 1
@@ -267,7 +267,31 @@ class decayProcessing:
             # write output to file
             file.writelines(linesOut)
 
+class decayChain:
+    """
+    Solves for decay chains and decay related things
+    """
+    def __init__(self,fPath):
+        "Pass filePath to decayData.csv; converts this to dictionary"
+        try:
+            with open(os.path.join(fPath,"decayData.json"),'r') as decayDataFile:
+                self.decayData = json.load(decayDataFile)
+        except FileNotFoundError:
+            print(f"Error : decayData.json file could not be found at {fPath}")
+            
+    def decayChain(self,parent: str, depth: int) -> List[str]:
+        if not hasattr(self,self.decayData):
+            print("Error : decayData not found!")
+        
+        decayList = []
+        n = 0
+        while n < depth:
+            for isotope in decayList:
+                pass
+
 # testing
 if __name__ == '__main__':
     decay = decayProcessing('./decayData',consoleLog=True)
     decay.buildDecayDictionary("test","test")
+    
+    
