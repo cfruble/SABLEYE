@@ -94,6 +94,13 @@ class decayProcessing:
                 Z -= 2
             elif decayMode == "EC" or decayMode == "B+": # electron capture
                 Z -= 1
+            elif decayMode == "EP" : # beta - proton decay
+                A -= 1
+            elif decayMode == "P": # proton release
+                A -= 1
+                Z -= 1
+            elif decayMode == "SF": # spontaneous fission
+                return ["SF"]
             elif decayMode == "IT": # internal transition
                 if meta == "0001":
                     meta = "0000"
@@ -103,7 +110,7 @@ class decayProcessing:
                     print(f"Error : metastable state {meta} not valid!")   
             else: # decay mode not defined
                 raise ValueError
-                print(f"Error : Decay mode {decayMode} not valid!")
+                #print(f"Error : Decay mode {decayMode} not valid!")
             childIsotopes.append(f"{Z:03}{A:03}{meta}")
         return childIsotopes
     
@@ -154,11 +161,11 @@ class decayProcessing:
                     try:
                         HL_temp = decayProcessing.convert_to_seconds(HL_temp)
                     except:
-                        print(f"Time conversion fail for {fName} @ {HL_temp}")
+                        print(f"Time conversion fail for {fName} @ {HL_temp} ")
                         HL_temp = None
                         HLfails += 1
 
-                if "Decay Mode:" in line and DM == False:
+                if "Decay Mode:" in line and DM == False: # found decay mode and NOT stable
                     DM = True
                     DM_temp = line.strip("Decay Mode:")
                     # remove last 8 characters
@@ -166,6 +173,11 @@ class decayProcessing:
                     DM_temp = DM_temp.strip()
                     DM_tempOG = DM_temp
                     
+                    # remove double formating with no probabilities
+                    if DM_temp == "A, EC":
+                        DM_temp = "A"
+                    if DM_temp == "EC, A":
+                        DM_temp = 'EC'
                     
                     # add in formats for normal operations
                     if (DM_temp == "B-") or (DM_temp == "A") or (DM_temp == "EC") or (DM_temp == "IT"):
@@ -186,7 +198,7 @@ class decayProcessing:
 
                     # split data into Decay Modes and Decay Probabilties
                     # Regular expression to match the letter(s) and the percentage
-                    pattern = r'([A-Za-z]+)=(\d+\.\d+)%'
+                    pattern = r'([A-Za-z\-]+)=(\d+\.\d+)%'
 
                     # Find all matches using the regex pattern
                     matches = re.findall(pattern, DM_temp)
@@ -194,24 +206,15 @@ class decayProcessing:
                     # Separate the matches into two lists
                     DM_temp = [match[0] for match in matches]
                     DP_temp = [float(match[1]) / 100 for match in matches]
-                    print(f"{DM_temp} : {DM_tempOG}")
+                    if DM_temp == [] and DP_temp == []: print(f"{DM_temp} {DP_temp} : \'{DM_tempOG}\'")
                     
-                    # hard coding to resolve types into standard formats
-                    """if "B-=100.00%" in DM_temp:
-                        DM_temp = ["B-"]
-                    elif "A=100.00%" in DM_temp:
-                        DM_temp = ["A"]
-                    elif "EC=100.00%" in DM_temp:
-                        DM_temp = ["EC"]
-                    elif "IT=100.00%" in DM_temp:
-                        DM_temp = ["IT"]
-                    """    
 
                 
             if (HL and DM):
                 halfLives.append(HL_temp)
                 decayMode.append(DM_temp)
                 isotopes.append(decayProcessing.convert_fName_to_AAAZZZMMMM(fName))
+                decayProb.append(DP_temp)
                 #isotopes.append(fName[4:-5])
             elif (HL is True and DM is False): # Fix broken cases
                 # Just assume that it is a B- decay since most errors are from here
@@ -228,16 +231,13 @@ class decayProcessing:
             else:
                 if self.consoleLog : print(f"HL DM read fail for {fName} @ HL:{HL_temp} DM:{DM_temp}")
         
-        print("  ***** RUN SUMMARY *****")
-        print(f"HL DM read fails      : {len(self.fNames)-len(halfLives)}")
-        print(f"Time conversion fails : {HLfails}")
-        print(f"Assumed B- decays     : {AssumedBeta}")
         
         # create dictionary for output
         decayDict = {}
         dictFails  = 0
         for i in range(len(isotopes)):
             parent = isotopes[i]
+            if halfLives[i] == None : continue # catch error and remove bad data
             try:
                 decayDict[parent] = {
                     'decayConst' :  1/float(halfLives[i]),
@@ -245,9 +245,17 @@ class decayProcessing:
                     'childProbs' : decayProb[i]
                     }
             except:
+                print(f"DictFail for : {halfLives[i]} {decayMode[i]} {decayProb[i]}")
                 dictFails += 1
                 continue
+            
+        
+        print("  ***** RUN SUMMARY *****")
+        print(f"HL DM read fails      : {len(self.fNames)-len(halfLives)}")
+        print(f"Time conversion fails : {HLfails}")
+        print(f"Assumed B- decays     : {AssumedBeta}")
         print(f"Decay dictionary fails : {dictFails}")
+        
         with open("decayData.json",'w') as file:
             json.dump(decayDict, file, indent=4)
 
