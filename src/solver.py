@@ -22,7 +22,7 @@ class fuelSystem():
         # save initial data into history
         self.history = concentrations
     
-    def appendHistroy(self,conentrations):
+    def appendHistory(self,conentrations):
         "Method to add new state to system history"
         
         # check that new states are correct length
@@ -56,7 +56,7 @@ class reactor():
         N_new = fuelSys.con @ expm(self.BM * time)
         
         # update system with new information
-        fuelSys.appendHistroy(N_new)
+        fuelSys.appendHistory(N_new)
         
 class reprocess():
     "Implements reprocessing class for analysis"
@@ -86,5 +86,5 @@ class reprocess():
             N_new /= sum(N_new)
         
         # append data after reprocessing to fuelSystem object
-        fuelSys.appendHistroy(N_new)
+        fuelSys.appendHistory(N_new)
         
