@@ -34,8 +34,8 @@ def rename(fName):
     return fName
 
 # get list of files
-fNames = os.listdir("../rawData/ENDF-B-VIII.0/neutrons")
-path = "../rawData/ENDF-B-VIII.0/neutrons"
+fNames = os.listdir("./rawData/ENDF-B-VIII.0/neutrons")
+path = "./rawData/ENDF-B-VIII.0/neutrons"
 
 # loop over file names and rename each one
 for fName in fNames:
