@@ -33,8 +33,10 @@ class fuelSystem():
         self.con = conentrations
         self.history = np.append(self.history, conentrations, axis=0)
     
-    def exportHistory(self,fName):
+    def exportHistory(self,fName=None):
         "Exports histroy to fName.npy for use in plotting or safekepping"
+        if fName == None:
+            return self.history.reshape(-1,len(self.iso))
         np.save(fName,self.history)
 
     
@@ -53,7 +55,10 @@ class reactor():
             raise ValueError('Input to timeSimulate is not a fuelSystem object!')
         
         # use matrix exponentiation to solve system
-        N_new = fuelSys.con @ expm(self.BM * time)
+        N_new = expm(self.BM * time) @ fuelSys.con
+        #print(f"{self.BM * time}")
+        #print(f"{fuelSys.con}")
+        #print(f"{N_new}")
         
         # update system with new information
         fuelSys.appendHistory(N_new)

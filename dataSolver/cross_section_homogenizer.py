@@ -91,3 +91,4 @@ class CrossSectionHomogenizer:
         self.cache[cache_key] = one_group_xs
 
         return one_group_xs
+

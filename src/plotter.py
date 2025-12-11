@@ -26,8 +26,21 @@ def plotHistogram(history,isotopes,runlabels,fName):
     
         
     
-def plotLinegraph(history,isotopes,fName):
-    pass
+def plotLinegraph(times,history,isotopes,fName):
+    "Plots 2D linegraph where each row is a timestate and each column an isotope"
+    fig, ax = plt.subplots()
+
+    # loop over isotopes
+    for i in range(history.shape[1]):
+        ax.plot(times,history[:,i][1:],label=isotopes[i])
+    
+    ax.legend(title='Isotopes')
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    ax.set_ylabel('Concentration')
+    ax.set_xlabel('Time [sec]')
+    fig.savefig(fName,dpi=600)
+
 
 # testing (remove from final prodution)
 if __name__ == '__main__':
