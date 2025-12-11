@@ -23,7 +23,8 @@ def fNameRenamer(fName):
         # remove metastable ending
         fName = fName[:-2]
         
-        
+def isoNameRenamer(isoName):
+    pass       
 
     # strip out isotope name
     fName = fName[:2] + fName[-3:]
@@ -69,8 +70,8 @@ for fName in fNames: #iterate through each file path
             isotopeList.append(key)
         
 
-    # create filenames that are readable by endf
-    #print(fNameRenamer(fName))
+    # rewrite isotope names in list from C14 -> 0060140000
+    
 
     lines = []
     for i in range(len(yieldList)):

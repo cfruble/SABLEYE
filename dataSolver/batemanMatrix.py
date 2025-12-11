@@ -4,13 +4,8 @@ import numpy as np
 import json
 from typing import List, Union
 import os
+import cross_section_homogenizer as csh
 
-class testing:
-    def __init__(self):
-        pass
-    def method(self):
-        print("method")
-    
 class batemanMatrix:
     """
     Creates Bateman matrix using preprocessed data
@@ -119,13 +114,13 @@ class batemanMatrix:
                 # find reaction rate using flux and add to bateman matrix
                 self.BM[targetIndex][productIndex] += 0
 
-
-
-    
     def exportBatemanMatrix(self):
         """Exports data from Bateman matrix that can then be used by simulation model"""
         return self.BM
 
+    def saveBatemanMatrix(self,fName):
+        "Saves bateman matrix as .npy file for later use"
+        np.save(fName,self.BM)
 
 # testing
 if __name__ == '__main__':

@@ -256,16 +256,16 @@ class decayProcessing:
         print(f"Assumed B- decays     : {AssumedBeta}")
         print(f"Decay dictionary fails : {dictFails}")
         
-        with open("decayData.json",'w') as file:
+        with open("./procData/decayData.json",'w') as file:
             json.dump(decayDict, file, indent=4)
 
         # create formatted output file
-        linesOut = []
-        with open("decayData.csv",'w') as file:
-            for i in range(len(halfLives)):
-                linesOut.append( f"{isotopes[i]},{halfLives[i]},{decayMode[i]}\n" )
-            # write output to file
-            file.writelines(linesOut)
+        #linesOut = []
+        #with open("decayData.csv",'w') as file:
+        #    for i in range(len(halfLives)):
+        #        linesOut.append( f"{isotopes[i]},{halfLives[i]},{decayMode[i]}\n" )
+        #    # write output to file
+        #    file.writelines(linesOut)
 
 class decayChain:
     """
@@ -289,9 +289,9 @@ class decayChain:
             for isotope in decayList:
                 pass
 
-# testing
+# setup for auto script
 if __name__ == '__main__':
-    decay = decayProcessing('./decayData',consoleLog=True)
+    decay = decayProcessing('./rawData/ENDF-B-VIII.0/decay',consoleLog=True)
     decay.buildDecayDictionary("test","test")
     
     
