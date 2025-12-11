@@ -14,4 +14,4 @@ mkdir -p procData
 mkdir -p procData/FY
 python ./dataSolver/decayPreProcessing.py
 python ./dataSolver/FYpreprocessing.py
-
+python ./dataSolver/crossSectionRenamer.py
