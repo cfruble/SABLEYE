@@ -51,7 +51,21 @@ class CrossSectionHomogenizer:
             return
 
         if not os.path.exists(endf_file_path):
-            raise FileNotFoundError(f"ENDF file not found: {endf_file_path}")
+
+            possible_paths = [
+            endf_file_path,
+            f"../{endf_file_path}",
+            f"../../{endf_file_path}",
+            f"rawData/ENDF-B-VIII.0/neutrons/{os.path.basename(endf_file_path)}",
+            f"../rawData/ENDF-B-VIII.0/neutrons/{os.path.basename(endf_file_path)}",
+        ]
+            
+            for path in possible_paths:
+                if os.path.exists(path):
+                    endf_file_path = path
+                    break
+            else:
+                raise FileNotFoundError(f"ENDF file not found: {endf_file_path}. Tried: {possible_paths}")
 
         try:
             nuclear_data = openmc.data.IncidentNeutron.from_endf(endf_file_path)
@@ -63,6 +77,10 @@ class CrossSectionHomogenizer:
         """
         Calculate one-group cross section.
         """
+
+        if endf_file_path.isdigit() and len(endf_file_path) == 10:
+            endf_file_path = f"../rawData/ENDF-B-VIII.0/neutrons/{endf_file_path}"
+
         cache_key = (nuclide, mt_number)
         if cache_key in self.cache:
             return self.cache[cache_key]

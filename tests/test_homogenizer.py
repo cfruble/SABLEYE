@@ -17,7 +17,7 @@ def test_thermal_validation():
     
     homogenizer = CrossSectionHomogenizer()
     
-    test_file = "../neutron_data/neutrons-version.VIII.1/n-092_U_235.endf"
+    test_file = "../rawData/ENDF-B-VIII.0/neutrons/0922350000"
     
     if not os.path.exists(test_file):
         print(f"ENDF file not found: {test_file}")
