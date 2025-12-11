@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import re
 import os
 
+
+
 def fNameRenamer(fName):
     # remove first part and file extension
     fName = fName[5:-5]
@@ -21,10 +23,7 @@ def fNameRenamer(fName):
     if "m1" in fName:
         metaStable = True
         # remove metastable ending
-        fName = fName[:-2]
-        
-def isoNameRenamer(isoName):
-    pass       
+        fName = fName[:-2]  
 
     # strip out isotope name
     fName = fName[:2] + fName[-3:]
@@ -36,14 +35,22 @@ def isoNameRenamer(isoName):
 
     return fName
 
+def isoRenamer(isoName):
+    pass
+
 # FY data threshold of significance
 threshold = 1e-10
 
 # get listing of fission yield files
-fNames = os.listdir("./rawFY")
+fNames = os.listdir("./rawData/ENDF-B-VIII.0/nfy")
 
 for fName in fNames: #iterate through each file path
-    fPath = os.path.join("./rawFY",fName)
+    # remove non-endf files from consideration
+    if not ".endf" in fName:
+        print(fName)
+        continue
+    
+    fPath = os.path.join("./rawData/ENDF-B-VIII.0/nfy",fName)
     #print(fPath)
     data = openmc.data.FissionProductYields(fPath)
 
@@ -78,7 +85,7 @@ for fName in fNames: #iterate through each file path
         line = f"{isotopeList[i]} , {yieldList[i]} \n"
         lines.append(line)
     
-    with open(f"./processedFY/{fNameRenamer(fName)}",'w') as f:
+    with open(f"./procData/FY/{fNameRenamer(fName)}",'w') as f:
         f.writelines(lines)
 
         
