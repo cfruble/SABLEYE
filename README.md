@@ -9,3 +9,7 @@ $ git clone https://github.com/cfruble/SABLEYE.git
 $ bash setupData.sh
 ```
 This will download the ENDF files and process then into a format the the program can use.  The total size for all of the data when unzipped is about 3.0 GB.
+
+## Documentation
+
+To view API docs, open any file in the `docs/` folder. In particular, open `index.html` in your browser.
