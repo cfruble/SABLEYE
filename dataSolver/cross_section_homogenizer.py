@@ -12,10 +12,23 @@ except ImportError:
 
 class CrossSectionHomogenizer:
     """
-    Single-group cross section homogenizer for nuclear data.
+    Provides single-group cross section homogenization for nuclear data.
+
+    This class supports loading ENDF nuclear data files, building energy spectra,
+    and calculating one-group cross sections.
     """
 
     def __init__(self, energy_spectrum: Dict[str, np.ndarray] = None):
+        """
+        Initialize the CrossSectionHomogenizer.
+
+        Parameters
+        ----------
+        energy_spectrum : dict, optional
+            Dictionary with 'energy_bins' (np.ndarray) and 'weights' (np.ndarray)
+            representing the energy spectrum used for homogenization.
+            If None, a default thermal spectrum is used.
+        """
         if energy_spectrum is None:
             self.energy_spectrum = self._default_thermal_spectrum()
         else:
@@ -24,14 +37,41 @@ class CrossSectionHomogenizer:
         self.loaded_nuclides = {}
 
     def _default_thermal_spectrum(self) -> Dict[str, np.ndarray]:
-        """Create default thermal reactor spectrum."""
+        """Create and return a default thermal reactor spectrum.
+        
+        Returns
+        -------
+        dict
+            Dictionary containing 'energy_bins' and 'weights' arrays
+            for a representative thermal energy spectrum.
+        
+        """
         energies = np.logspace(-2, 1, 500)  # 0.01 eV to 10 eV
         weights = 1 / np.sqrt(energies)
         return {'energy_bins': energies, 'weights': weights}
 
     @staticmethod
     def create_spectrum(spectrum_type='thermal', **kwargs):
-        """Create different energy spectra."""
+        """
+        Create various energy spectra.
+
+        Parameters
+        ----------
+        spectrum_type : str, optional
+            Type of spectrum: 'thermal', 'fast', or 'custom'.
+        **kwargs
+            For 'custom', supply 'energies' and 'weights' arrays.
+
+        Returns
+        -------
+        dict
+            Dictionary with 'energy_bins' and 'weights' arrays.
+
+        Raises
+        ------
+        ValueError
+            If an unknown spectrum type is specified, or required kwargs are missing.
+        """
         if spectrum_type == 'thermal':
             energies = np.logspace(-2, 1, 500)
             weights = 1 / np.sqrt(energies)
@@ -46,7 +86,26 @@ class CrossSectionHomogenizer:
         return {'energy_bins': energies, 'weights': weights}
 
     def load_nuclide_data(self, endf_file_path: str, nuclide: str) -> None:
-        """Load ENDF data for a nuclide."""
+        """
+        Load ENDF-format nuclear data for a nuclide.
+
+        Tries several possible paths to locate the ENDF file. Loads the data
+        into memory for subsequent cross section calculations.
+
+        Parameters
+        ----------
+        endf_file_path : str
+            Path to the ENDF file.
+        nuclide : str
+            Name of the nuclide to load (e.g., 'U235').
+
+        Raises
+        ------
+        FileNotFoundError
+            If the ENDF file cannot be found.
+        ValueError
+            If loading data fails (e.g., file corrupted).
+        """
         if nuclide in self.loaded_nuclides:
             return
 
@@ -75,7 +134,30 @@ class CrossSectionHomogenizer:
 
     def get_one_group_xs(self, endf_file_path: str, nuclide: str, mt_number: int) -> float:
         """
-        Calculate one-group cross section.
+        Calculate single-group (homogenized) cross section for a nuclide and reaction.
+
+        Loads nuclear data if not already loaded, interpolates the reaction cross section
+        over the current energy spectrum, and performs spectrum-weighted averaging.
+
+        Parameters
+        ----------
+        endf_file_path : str
+            Path (or ENDF identifier) to the ENDF nuclear data file.
+        nuclide : str
+            Name of the nuclide to query (e.g., 'U235').
+        mt_number : int
+            ENDF reaction MT number (e.g., 18 for fission, 102 for n-gamma).
+
+        Returns
+        -------
+        float
+            Homogenized one-group cross section (barns).
+
+        Raises
+        ------
+        ValueError
+            If the specified reaction MT is not available for the nuclide
+            or the ENDF data cannot be loaded.
         """
 
         if endf_file_path.isdigit() and len(endf_file_path) == 10:
