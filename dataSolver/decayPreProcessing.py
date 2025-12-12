@@ -1,4 +1,29 @@
-"Script to process ENDF decay data into usable format"
+"""
+Script to process ENDF decay data into usable format.
+
+This module reads ENDF decay data files, extracts half-lives, decay modes, and probabilities,
+and creates a JSON dictionary suitable for simulation models. It provides tools to parse file
+names, convert time units, and derive child isotopes according to decay chains.
+
+Usage
+-----
+Place ENDF decay files in './rawData/ENDF-B-VIII.0/decay/'
+Run the main script to generate './procData/decayData.json'.
+
+Classes
+-------
+decayProcessing
+    Parse and process ENDF decay data files into a dictionary.
+
+decayChain
+    Loads decay dictionary and (partially) supports decay chain queries.
+
+Functions
+---------
+generateDecayData
+    (Stub) Placeholder for future encapsulated decay data generator.
+"""
+
 
 import os
 import re
@@ -10,8 +35,24 @@ def generateDecayData(decayENDF_fPath: str, out_fName = "decayData.csv", out_fPa
     pass
 
 class decayProcessing:
-    "Class to extract decay data from ENDF files and put it into an accessible format"
+    """
+    Extracts decay data from ENDF files and organizes it into a dictionary.
+
+    Collects parent isotope, half-life (converted to seconds), decay modes,
+    and probabilities for downstream simulation or analysis.
+    """
+
     def __init__(self, decayENDF_fPath: str, consoleLog = False):
+        """
+        Initialize the decay data processor for ENDF decay files.
+
+        Parameters
+        ----------
+        decayENDF_fPath : str
+            Directory containing ENDF-formatted decay files (.endf).
+        consoleLog : bool, optional
+            If True, prints processing logs and summary.
+        """
         self.consoleLog = consoleLog
         self.decayENDF_fPath = decayENDF_fPath
         self.fPaths = []
@@ -23,6 +64,24 @@ class decayProcessing:
 
     @staticmethod
     def convert_to_seconds(time_string: str) -> float:
+        """
+        Convert various time unit strings to values in seconds.
+
+        Parameters
+        ----------
+        time_string : str
+            Half-life string such as '1.23 D', '10.5 S', '4.7 Y', etc.
+
+        Returns
+        -------
+        float
+            Equivalent seconds.
+
+        Raises
+        ------
+        ValueError
+            If time unit is not recognized.
+        """
         time_string = time_string.replace(">","")
         time_string = time_string.replace("<","")
 
@@ -57,8 +116,21 @@ class decayProcessing:
 
     @staticmethod
     def convert_fName_to_AAAZZZMMMM(fName:str) -> str:
+        """
+        Convert ENDF decay filename to canonical isotope code (AAAZZZMMMM). Example: ENDF decay file name in format of 'dec-092_U_235.endf' into '0922350000'
+
+        Parameters
+        ----------
+        fName : str
+            File name like 'dec-092_U_235.endf'
+
+        Returns
+        -------
+        str
+            Canonical isotope code like '0922350000'
+        """
         metastable = 0
-        "Converts ENDF decay file names in format of 'dec-092_U_235.endf' into '0922350000'"
+        
         name = fName[4:-5] # remove 'dec-' and '.endf'
         if "m1" in name: # first metastable state
             name = name.replace("m1","") # remvoe m1
@@ -79,6 +151,21 @@ class decayProcessing:
     
     @staticmethod
     def childIsotopes(parent: str, decayModes: Union[List[str],None]) -> str:
+        """
+        Calculate child isotopes produced from various decay modes.
+
+        Parameters
+        ----------
+        parent : str
+            Canonical parent isotope code (AAAZZZMMMM).
+        decayModes : list of str or None
+            List of decay mode strings.
+
+        Returns
+        -------
+        list of str
+            Child isotope codes resulting from each decay mode.
+        """
         if decayModes == None: # stable istotope case
             return []
         parentStr = str(parent)
@@ -115,6 +202,25 @@ class decayProcessing:
         return childIsotopes
     
     def buildDecayDictionary(self, out_fName: str, out_fPath: str):
+        """
+        Build decay dictionary from ENDF files and save as JSON.
+
+        Reads each decay file, extracts parent, half-life, decay modes,
+        and branching probabilities, assembling them into a structured dictionary.
+
+        Output is saved as JSON in './procData/decayData.json'.
+
+        Parameters
+        ----------
+        out_fName : str
+            Output filename (not used, kept for compatibility).
+        out_fPath : str
+            Output path (not used in this implementation).
+
+        Returns
+        -------
+        None
+        """
         # create empty lists to store data into
         isotopes = []
         halfLives = []
@@ -272,7 +378,14 @@ class decayChain:
     Solves for decay chains and decay related things
     """
     def __init__(self,fPath):
-        "Pass filePath to decayData.csv; converts this to dictionary"
+        """
+        Load decay data dictionary from JSON file.
+
+        Parameters
+        ----------
+        fPath : str
+            Folder containing 'decayData.json'.
+        """
         try:
             with open(os.path.join(fPath,"decayData.json"),'r') as decayDataFile:
                 self.decayData = json.load(decayDataFile)
@@ -280,6 +393,21 @@ class decayChain:
             print(f"Error : decayData.json file could not be found at {fPath}")
             
     def decayChain(self,parent: str, depth: int) -> List[str]:
+        """
+        Stub for recursive decay chain solution.
+
+        Parameters
+        ----------
+        parent : str
+            Parent isotope code.
+        depth : int
+            Depth to trace down the chain.
+
+        Returns
+        -------
+        list of str
+            Decay chain isotopes (not implemented).
+        """
         if not hasattr(self,self.decayData):
             print("Error : decayData not found!")
         
