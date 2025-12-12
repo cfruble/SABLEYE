@@ -1,11 +1,42 @@
-"File to rename cross sections so that they are machine readable"
+"""
+File to rename cross section files into a canonical, machine-readable format.
+
+This script processes ENDF cross section files in './rawData/ENDF-B-VIII.0/neutrons',
+renaming them to standardized isotope codes suitable for programmatic use.
+
+Usage
+-----
+Run this script after extracting ENDF data to the 'neutrons' folder.
+All files with '.endf' extensions are converted to canonical codes.
+
+Functions
+---------
+rename(fName)
+    Converts ENDF cross section filename to isotope code.
+"""
 
 import os
 import sys
 
 # function to renamte files
 def rename(fName):
+    """
+    Convert ENDF cross section filename to canonical isotope code.
 
+    Removes "n-" prefix and ".endf" suffix, 
+    processes meta-stable state information, and
+    simplifies isotope naming for machine readability.
+
+    Parameters
+    ----------
+    fName : str
+        Original filename (e.g., "n-092_U_235.endf").
+
+    Returns
+    -------
+    str
+        Renamed string in canonical format (e.g., '0922350000' or '0922350001').
+    """
     # check if file has .endf in it
     if not ".endf" in fName:
         print(f"Skipped renaming {fName}")
