@@ -1,13 +1,37 @@
-"Implementation for main solver of SABLEYE"
+"""
+Main solver implementation for SABLEYE.
+
+Provides classes and methods to manipulate the fuel system, run reactor
+simulations via the Bateman matrix, and perform reprocessing operations.
+"""
 
 import numpy as np
 from scipy.linalg import expm
 
 class fuelSystem():
-    "Fuel system which contains information on isotopic history of system"
+    """
+    Fuel system holding information on isotopic history.
+
+    Stores isotope names, concentrations, and keeps a history of fuel compositions
+    through simulation steps.
+    """
     
     def __init__(self,isotopes,concentrations):
-        "Initialize fuel system with initial isotopes and concentrations"
+        """
+        Initialize fuel system with initial isotopes and concentrations.
+
+        Parameters
+        ----------
+        isotopes : list of str
+            List of isotope names.
+        concentrations : array-like
+            List or array of starting concentrations (ordered to match isotopes).
+
+        Raises
+        ------
+        ValueError
+            If the isotopes and concentrations are not of the same length.
+        """
         # check that isotope list and conetration list are same length
         if len(isotopes) != len(concentrations):
             raise ValueError('Isotope and concentration list not equal')
@@ -23,7 +47,19 @@ class fuelSystem():
         self.history = concentrations
     
     def appendHistory(self,conentrations):
-        "Method to add new state to system history"
+        """
+        Add a new state to the system's history.
+
+        Parameters
+        ----------
+        concentrations : array-like
+            Isotope concentrations to append (must match isotope count).
+
+        Raises
+        ------
+        ValueError
+            If the input concentrations have wrong length.
+        """
         
         # check that new states are correct length
         if self.dataLength != len(conentrations):
@@ -34,22 +70,59 @@ class fuelSystem():
         self.history = np.append(self.history, conentrations, axis=0)
     
     def exportHistory(self,fName=None):
-        "Exports histroy to fName.npy for use in plotting or safekepping"
+        """
+        Export isotope history as a NumPy array or .npy file.
+
+        Parameters
+        ----------
+        fName : str, optional
+            If given, saves history to a NumPy binary file. If None, returns the array.
+
+        Returns
+        -------
+        np.ndarray or None
+            Isotope history array if fName is not provided; else None.
+        """
         if fName == None:
             return self.history.reshape(-1,len(self.iso))
         np.save(fName,self.history)
 
     
 class reactor():
-    "Implements reactor class for analysis"
+    """
+    Reactor class for simulation analysis.
+
+    Encapsulates Bateman matrix application to the fuel system for time evolution.
+    """
     
     def __init__(self,batemanMatrix):
+        """
+        Initialize reactor with Bateman matrix.
+
+        Parameters
+        ----------
+        batemanMatrix : np.ndarray
+            Matrix for solving Bateman equations (transmutation and decay rates).
+        """
         self.BM = batemanMatrix
         
     
     def timeSimulate(self,fuelSys,time):
-        "Method to apply bateman matrix to system for specified time and appends fuelSystem object"
-        
+        """
+        Method to apply bateman matrix to system for specified time and appends fuelSystem object"
+
+        Parameters
+        ----------
+        fuelSys : fuelSystem
+            Fuel system to evolve.
+        time : float
+            Simulation time interval.
+
+        Raises
+        ------
+        ValueError
+            If fuelSys is not a fuelSystem object.
+        """
         # check that passed fuelSys is an instance of the fuelSystem
         if not isinstance(fuelSys,fuelSystem):
             raise ValueError('Input to timeSimulate is not a fuelSystem object!')
@@ -64,22 +137,43 @@ class reactor():
         fuelSys.appendHistory(N_new)
         
 class reprocess():
-    "Implements reprocessing class for analysis"
+    """
+    Reprocessing class for simulation analysis.
+
+    Applies reprocessing schemes to isotope vectors, with options for normalization.
+    """
     
     def __init__(self,add,mult,reNorm=False):
         """
-        Docstring for __init__
-        
-        :param add: Isotope vector detailing what should be added to system
-        :param mult: Isotope vector detailing what fractions are removed
-        :param reNorm: Isotope vector specifying if system should be renormalized
+        Initialize reprocessing scheme.
+
+        Parameters
+        ----------
+        add : array-like
+            Vector detailing isotopes added to system.
+        mult : array-like
+            Vector detailing fractions that are removed/modified by reprocessing.
+        reNorm : bool, optional
+            If True, isotope vector is renormalized after reprocessing.
         """
         self.add = add
         self.mult = mult
         self.reNorm = reNorm
 
     def repo(self,fuelSys):
-        "Method to apply reprocessing scheme to fuelSystem object and append history"
+        """
+        Apply the reprocessing scheme to a fuelSystem object and append to history.
+
+        Parameters
+        ----------
+        fuelSys : fuelSystem
+            Fuel system to modify with reprocessing.
+
+        Raises
+        ------
+        ValueError
+            If fuelSys is not a fuelSystem object.
+        """
         
         # check that passed fuelSys is an instance of the fuelSystem
         if not isinstance(fuelSys,fuelSystem):
