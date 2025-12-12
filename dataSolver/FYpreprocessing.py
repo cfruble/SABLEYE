@@ -1,9 +1,22 @@
-"Helper module to process fission yield data into readable format from endf files using OpenMC"
-
 """
-USAGE:
-ENDF FY files should be placed in a folder "./rawFY"
+Helper module to process fission yield (FY) data from ENDF files using OpenMC.
 
+This script reads ENDF FY files (usually placed in `./rawData/ENDF-B-VIII.0/nfy`),
+extracts isotopes and their independent yields above a set threshold, and writes
+the results in a concise comma-separated format suitable for further processing.
+
+Usage
+-----
+Make sure your ENDF FY files are located in `./rawData/ENDF-B-VIII.0/nfy/`.
+Output files are written to `./procData/FY/`, named using the processed isotope code.
+
+Functions
+---------
+fNameRenamer(fName)
+    Converts ENDF file names to a canonical isotope code used in output files.
+
+isoRenamer(isoName)
+    Placeholder for renaming isotope strings to canonical format (not yet implemented).
 """
 
 import openmc
@@ -16,6 +29,22 @@ import os
 
 
 def fNameRenamer(fName):
+    """
+    Convert ENDF FY filename to canonical isotope code for output.
+
+    Strips prefixes/suffixes, adjusts for meta-stable states, and 
+    produces a unique code used in output file naming.
+
+    Parameters
+    ----------
+    fName : str
+        Original filename from ENDF FY directory.
+
+    Returns
+    -------
+    str
+        Canonical isotope code, e.g. "0060140000" or meta-stable variant.
+    """
     # remove first part and file extension
     fName = fName[5:-5]
     metaStable = False
@@ -36,6 +65,18 @@ def fNameRenamer(fName):
     return fName
 
 def isoRenamer(isoName):
+    """
+    Placeholder function for renaming isotope strings (not yet implemented).
+
+    Parameters
+    ----------
+    isoName : str
+        Isotope name.
+
+    Returns
+    -------
+    None
+    """
     pass
 
 # FY data threshold of significance
