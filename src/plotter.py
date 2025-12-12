@@ -1,10 +1,43 @@
-"Module to plot results from reactor solver"
+"""
+Module to plot results from reactor solver.
+
+This module provides functions to generate histogram and line graph
+plots displaying isotopic compositions and their evolution in reactor
+fuel cycles.
+
+Functions
+---------
+plotHistogram(history, isotopes, runlabels, fName)
+    Generates and saves a stacked bar chart of isotopic history data.
+
+plotLinegraph(times, history, isotopes, fName)
+    Generates and saves a line graph for isotope concentrations over time.
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
 def plotHistogram(history,isotopes,runlabels,fName):
+    """
+    Generate and save a stacked bar chart of isotopic evolution.
+
+    Parameters
+    ----------
+    history : np.ndarray
+        2D array where each row corresponds to a fuel composition state
+        and each column corresponds to an isotope's fraction at that state.
+    isotopes : list of str
+        List of isotope names (one for each column in 'history').
+    runlabels : list of str
+        X-axis labels corresponding to each fuel composition state (row in 'history').
+    fName : str
+        Filename prefix for the saved plot (PNG format).
+
+    Returns
+    -------
+    None
+    """
     fig,ax = plt.subplots()
     # parse data by column for each data type
     bottom = np.zeros(history.shape[0])
@@ -27,7 +60,24 @@ def plotHistogram(history,isotopes,runlabels,fName):
         
     
 def plotLinegraph(times,history,isotopes,fName):
-    "Plots 2D linegraph where each row is a timestate and each column an isotope"
+    """
+    Generate and save a log-log line graph of isotope concentrations over time.
+
+    Parameters
+    ----------
+    times : array-like
+        Sequence of time points (x-axis values).
+    history : np.ndarray
+        2D array where each row is a time step and each column represents an isotope concentration.
+    isotopes : list of str
+        List of isotope names (one for each column in 'history').
+    fName : str
+        Filename for the saved plot (PNG format).
+
+    Returns
+    -------
+    None
+    """
     fig, ax = plt.subplots()
 
     # loop over isotopes
