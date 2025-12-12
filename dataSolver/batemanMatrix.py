@@ -15,7 +15,7 @@ import numpy as np
 import json
 from typing import List, Union
 import os
-import cross_section_homogenizer as csh
+import dataSolver.cross_section_homogenizer as csh
 
 class batemanMatrix:
     """
